@@ -166,25 +166,33 @@ public class CollisionInteractionMap implements CollisionMap {
     @SuppressWarnings("unchecked")
     private List<Class<? extends Unit>> getInheritance(
         Class<? extends Unit> clazz) {
-        List<Class<? extends Unit>> found = new ArrayList<>();
-        found.add(clazz);
+        List<Class<? extends Unit>> inheritanceChain = new ArrayList<>();
+        inheritanceChain.add(clazz);
 
-        int index = 0;
-        while (found.size() > index) {
-            Class<?> current = found.get(index);
-            Class<?> superClass = current.getSuperclass();
-            if (superClass != null && Unit.class.isAssignableFrom(superClass)) {
-                found.add((Class<? extends Unit>) superClass);
-            }
-            for (Class<?> classInterface : current.getInterfaces()) {
-                if (Unit.class.isAssignableFrom(classInterface)) {
-                    found.add((Class<? extends Unit>) classInterface);
-                }
-            }
-            index++;
+        int currentIndex = 0;
+        while (currentIndex < inheritanceChain.size()) {
+            Class<?> current = inheritanceChain.get(currentIndex);
+            addSuperclassToInheritanceChain(current, inheritanceChain);
+            addInterfacesToInheritanceChain(current, inheritanceChain);
+            currentIndex++;
         }
 
-        return found;
+        return inheritanceChain;
+    }
+
+    private static void addInterfacesToInheritanceChain(Class<?> current, List<Class<? extends Unit>> found) {
+        for (Class<?> classInterface : current.getInterfaces()) {
+            if (Unit.class.isAssignableFrom(classInterface)) {
+                found.add((Class<? extends Unit>) classInterface);
+            }
+        }
+    }
+
+    private static void addSuperclassToInheritanceChain(Class<?> current, List<Class<? extends Unit>> found) {
+        Class<?> superClass = current.getSuperclass();
+        if (superClass != null && Unit.class.isAssignableFrom(superClass)) {
+            found.add((Class<? extends Unit>) superClass);
+        }
     }
 
     /**
