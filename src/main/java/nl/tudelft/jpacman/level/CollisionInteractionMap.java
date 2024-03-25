@@ -71,30 +71,31 @@ public class CollisionInteractionMap implements CollisionMap {
     public <C1 extends Unit, C2 extends Unit> void onCollision(
         Class<C1> collider, Class<C2> collidee, boolean symetric,
         CollisionHandler<C1, C2> handler) {
-        addHandler(collider, collidee, handler);
+        addCollisionHandler(collider, collidee, handler);
         if (symetric) {
-            addHandler(collidee, collider, new InverseCollisionHandler<>(handler));
+            addCollisionHandler(collidee, collider, new InverseCollisionHandler<>(handler));
         }
     }
 
     /**
      * Adds the collision interaction..
      *
-     * @param collider
-     *            The collider type.
-     * @param collidee
-     *            The collidee type.
+     * @param colliderClass
+     *            The colliderClass type.
+     * @param collideeClass
+     *            The collideeClass type.
      * @param handler
      *            The handler that handles the collision.
      */
-    private void addHandler(Class<? extends Unit> collider,
-                            Class<? extends Unit> collidee, CollisionHandler<?, ?> handler) {
-        if (!handlers.containsKey(collider)) {
-            handlers.put(collider, new HashMap<>());
+    private void addCollisionHandler(Class<? extends Unit> colliderClass,
+                                     Class<? extends Unit> collideeClass, CollisionHandler<?, ?> handler) {
+        if (!handlers.containsKey(colliderClass)) {
+            handlers.put(colliderClass, new HashMap<>());
         }
 
-        Map<Class<? extends Unit>, CollisionHandler<?, ?>> map = handlers.get(collider);
-        map.put(collidee, handler);
+
+        Map<Class<? extends Unit>, CollisionHandler<?, ?>> map = handlers.get(colliderClass);
+        map.put(collideeClass, handler);
     }
 
     /**
